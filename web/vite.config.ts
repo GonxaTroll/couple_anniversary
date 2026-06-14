@@ -9,6 +9,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@couple/video': path.resolve(__dirname, '../video/src/Composition.tsx'),
+      // Deduplicate React — ensures video compositions and the Player shell
+      // all use the same React instance (avoids hooks errors and black screen).
+      'react': path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
   },
 })

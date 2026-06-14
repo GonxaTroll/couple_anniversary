@@ -34,6 +34,10 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
     playerRef.current?.seekTo(0);
   }, [scene.id]);
 
+  const handleMessagesComplete = useCallback(() => {
+    setMessagesComplete(true);
+  }, []);
+
   const handleAdvance = useCallback(async (answerId?: string, answerText?: string) => {
     if (transitioning) return;
     setTransitioning(true);
@@ -63,30 +67,55 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
       }}
     >
       {/* Remotion animation — full-bleed background */}
-      <div className="absolute inset-0 z-0">
+      {/* Outer clip box */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {/* Inner box: sized to cover like object-fit:cover for 1584×672 (2.357:1 ratio).
+            min-width ensures it fills height when the screen is taller than the ratio;
+            min-height ensures it fills width when the screen is wider. */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            // Cover behaviour: at minimum fill 100vw wide AND 100vh tall.
+            // The image ratio is 1584:672 = 2.357:1.
+            // If the screen is wider than 2.357:1 → width=100vw drives height.
+            // If the screen is taller than 2.357:1 → height=100vh drives width.
+            minWidth: "max(100vw, calc(100vh * 1584 / 672))",
+            minHeight: "max(100vh, calc(100vw * 672 / 1584))",
+            width: "max(100vw, calc(100vh * 1584 / 672))",
+            height: "max(100vh, calc(100vw * 672 / 1584))",
+          }}
+        >
         <Player
           ref={playerRef}
           component={Component}
           durationInFrames={60 * 30}
           fps={60}
-          compositionWidth={2560}
-          compositionHeight={1440}
+          compositionWidth={1584}
+          compositionHeight={672}
           style={{ width: "100%", height: "100%" }}
-          autoPlayback
+          autoPlay
           loop
           controls={false}
           clickToPlay={false}
           spaceKeyToPlayOrPause={false}
           moveToBeginningWhenEnded={false}
-          inputProps={{}}
+          inputProps={{
+            imageSrc: `${window.location.origin}/${
+              scene.compositionId === "HomeScene" ? "final_home.png" : "final_muvim.png"
+            }`,
+          }}
         />
+        </div>
       </div>
 
       {/* Story overlay — centred column */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-12 overflow-y-auto">
         <ChatMessages
           messages={scene.messages}
-          onComplete={() => setMessagesComplete(true)}
+          onComplete={handleMessagesComplete}
         />
 
         {messagesComplete && scene.quiz && (
