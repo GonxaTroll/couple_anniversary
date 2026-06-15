@@ -39,7 +39,7 @@ export function ChatMessages({ messages, onComplete }: Props) {
               }
             `}
             style={{
-              background: "rgba(252, 249, 248, 0.72)",
+              background: "rgba(252, 249, 248, 0.92)",
               backdropFilter: "blur(18px)",
               WebkitBackdropFilter: "blur(18px)",
               border: "1px solid rgba(255,255,255,0.45)",

@@ -23,7 +23,7 @@ export function QuizPanel({ quiz, onAnswer }: Props) {
       <div
         className="rounded-2xl px-6 py-5 shadow-xl"
         style={{
-          background: "rgba(252, 249, 248, 0.78)",
+          background: "rgba(252, 249, 248, 0.92)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(255,255,255,0.5)",
