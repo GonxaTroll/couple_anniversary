@@ -34,6 +34,13 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
     playerRef.current?.seekTo(0);
   }, [scene.id]);
 
+  // Auto-complete if no messages
+  useEffect(() => {
+    if (scene.messages.length === 0) {
+      setMessagesComplete(true);
+    }
+  }, [scene.messages.length]);
+
   const handleMessagesComplete = useCallback(() => {
     setMessagesComplete(true);
   }, []);
@@ -43,7 +50,6 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
     setTransitioning(true);
 
     if (scene.quiz && answerId && answerText) {
-      // Fire and forget — don't block the transition
       submitQuizAnswer({
         anniversary_id: ANNIVERSARY_ID,
         person: PERSON,
@@ -52,11 +58,11 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
       }).catch(console.error);
     }
 
-    // Small delay so the user sees their selection highlighted
     setTimeout(() => onNext(), 400);
   }, [transitioning, scene.quiz, onNext]);
 
   const Component = COMPOSITION_MAP[scene.compositionId];
+  const hasMessages = scene.messages.length > 0;
 
   return (
     <div
@@ -103,24 +109,52 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
         </div>
       </div>
 
-      {/* Story overlay — centred column */}
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-12 overflow-y-auto">
-        <ChatMessages
-          messages={scene.messages}
-          onComplete={handleMessagesComplete}
-        />
-
-        {messagesComplete && scene.quiz && (
-          <QuizPanel
-            quiz={scene.quiz}
-            onAnswer={(id, text) => handleAdvance(id, text)}
+      {/* Story overlay — only for scenes with messages */}
+      {hasMessages && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-12 overflow-y-auto">
+          <ChatMessages
+            messages={scene.messages}
+            onComplete={handleMessagesComplete}
           />
-        )}
 
-        {messagesComplete && !scene.quiz && scene.transition.type === "button" && (
+          {messagesComplete && scene.quiz && (
+            <QuizPanel
+              quiz={scene.quiz}
+              onAnswer={(id, text) => handleAdvance(id, text)}
+            />
+          )}
+
+          {messagesComplete && !scene.quiz && scene.transition.type === "button" && (
+            <button
+              onClick={() => handleAdvance()}
+              className="mt-6 px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
+              style={{
+                fontFamily: "'Be Vietnam Pro', sans-serif",
+                background: "rgba(150, 72, 36, 0.85)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              {scene.transition.label}
+            </button>
+          )}
+
+          {isLast && messagesComplete && !scene.quiz && (
+            <p
+              className="mt-8 text-white/60 text-sm tracking-widest"
+              style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
+            >
+              — fin —
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Simple continue button for scenes without messages */}
+      {!hasMessages && messagesComplete && scene.transition.type === "button" && (
+        <div className="absolute inset-0 z-10 flex items-end justify-center pb-16">
           <button
             onClick={() => handleAdvance()}
-            className="mt-6 px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
+            className="px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
             style={{
               fontFamily: "'Be Vietnam Pro', sans-serif",
               background: "rgba(150, 72, 36, 0.85)",
@@ -129,17 +163,8 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
           >
             {scene.transition.label}
           </button>
-        )}
-
-        {isLast && messagesComplete && !scene.quiz && (
-          <p
-            className="mt-8 text-white/60 text-sm tracking-widest"
-            style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
-          >
-            — fin —
-          </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

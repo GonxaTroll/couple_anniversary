@@ -1,4 +1,9 @@
-import type { Scene } from "./types";
+import type { Scene, Riddle } from "./types";
+
+export const RIDDLE: Riddle = {
+  question: "What was the name of the place where we first held hands?",
+  answer: "malvarrosa",
+};
 
 export const SCENES: Scene[] = [
   {
@@ -44,35 +49,7 @@ export const SCENES: Scene[] = [
   {
     id: "muvim",
     compositionId: "MuVimScene",
-    messages: [
-      {
-        id: "m1",
-        speaker: "him",
-        text: "I'm outside MuViM. It's even more beautiful at night.",
-        time: "9:14 PM",
-      },
-      {
-        id: "m2",
-        speaker: "her",
-        text: "You're early! I'm two streets away, just ran out of the metro.",
-        time: "9:15 PM",
-      },
-      {
-        id: "m3",
-        speaker: "him",
-        text: "Take your time. I could wait here forever.",
-        time: "9:15 PM",
-      },
-    ],
-    quiz: {
-      questionKey: "muvim_night",
-      question: "What was the first thing she said when she finally arrived?",
-      options: [
-        { id: "a", text: "Sorry, sorry, sorry!" },
-        { id: "b", text: "You look nice tonight" },
-        { id: "c", text: "I told you I'd make it" },
-      ],
-    },
-    transition: { type: "quiz" },
+    messages: [],
+    transition: { type: "button", label: "Continue" },
   },
 ];

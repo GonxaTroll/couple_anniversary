@@ -1,11 +1,13 @@
 import { useCallback, useState } from "react";
 import { SceneContainer } from "./components/SceneContainer";
-import { SCENES } from "./scenes/data";
+import { RiddleGate } from "./components/RiddleGate";
+import { SCENES, RIDDLE } from "./scenes/data";
 import "./index.css";
 
 export default function App() {
   const [sceneIndex, setSceneIndex] = useState(0);
   const [fadingOut, setFadingOut] = useState(false);
+  const [storyUnlocked, setStoryUnlocked] = useState(false);
 
   const handleNext = useCallback(() => {
     if (sceneIndex >= SCENES.length - 1) return;
@@ -15,6 +17,18 @@ export default function App() {
       setFadingOut(false);
     }, 800);
   }, [sceneIndex]);
+
+  if (!storyUnlocked) {
+    return (
+      <div className="w-screen h-screen overflow-hidden">
+        <RiddleGate
+          question={RIDDLE.question}
+          answer={RIDDLE.answer}
+          onSolved={() => setStoryUnlocked(true)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

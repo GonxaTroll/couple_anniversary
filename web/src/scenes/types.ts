@@ -21,10 +21,18 @@ export type TransitionTrigger =
   | { type: "button"; label: string }  // explicit CTA
   | { type: "auto"; delayMs: number }; // auto-advance after delay
 
+export type Riddle = {
+  question: string;
+  answer: string;
+  placeholder?: string;
+  buttonLabel?: string;
+};
+
 export type Scene = {
   id: string;
   compositionId: "HomeScene" | "MuVimScene";
   messages: ChatMessage[];
   quiz?: Quiz;
+  riddle?: Riddle;
   transition: TransitionTrigger;
 };
