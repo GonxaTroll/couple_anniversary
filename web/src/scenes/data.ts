@@ -139,19 +139,19 @@ export const SCENES: Scene[] = [
       {
         id: "m1",
         speaker: "him",
-        text: "Estoy fuera del MuViM. Es aún más bonito de noche.",
+        text: "Estoy fuera del MuViM. Llegaré en 10 minutos.",
         time: "21:15",
       },
       {
         id: "m2",
         speaker: "her",
-        text: "¡Has llegado pronto! Estoy a dos calles, acabo de salir del metro.",
+        text: "Ah, me suena... Está bien, te espero.",
         time: "21:16",
       },
       {
         id: "m3",
         speaker: "him",
-        text: "Tómate tu tiempo. Podría esperarte aquí para siempre.",
+        text: "Traigo mis apuntes, seguro que te sirven para tu examen.",
         time: "21:17",
       },
     ],
