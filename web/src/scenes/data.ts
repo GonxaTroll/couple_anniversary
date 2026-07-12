@@ -33,31 +33,81 @@ export const SCENES: Scene[] = [
       questionKey: "first_late_night",
       question: "¿A qué se ha dedicado Gonzalo anteriormente?",
       options: [
-        { id: "a", text: "Profesor de física." },
-        { id: "b", text: "A estar en su Prime (como los números)" },
-        { id: "c", text: "Chocolatero" },
+        {
+          id: "a",
+          text: "Profesor de física.",
+          isCorrect: true,
+          nextMessages: [
+            {
+              id: "pq1",
+              speaker: "him",
+              text: "...he sido profesor particular? Te podría ayudar.",
+              time: "22:34",
+            },
+            {
+              id: "pq2",
+              speaker: "her",
+              text: "No estaría mal...",
+              time: "22:35",
+            },
+            {
+              id: "pq3",
+              speaker: "him",
+              text: "Bueno... aquí tienes mi disponibilidad.",
+              time: "22:36",
+            },
+          ],
+        },
+        {
+          id: "b",
+          text: "A estar en su Prime (como los números)",
+          nextMessages: [
+            {
+              id: "pq1b",
+              speaker: "him",
+              text: "... estoy mamadísimo?",
+              time: "22:34",
+            },
+            {
+              id: "pq2b",
+              speaker: "her",
+              text: "bruh wtf",
+              time: "22:35",
+            },
+            {
+              id: "pq3b",
+              speaker: "her",
+              text: "Bueno... igual tengo algo planeado para este finde.",
+              time: "22:36",
+            },
+          ],
+        },
+        {
+          id: "c",
+          text: "Chocolatero",
+          nextMessages: [
+            {
+              id: "pq1c",
+              speaker: "him",
+              text: "Ojalá, pero no...",
+              time: "22:34",
+            },
+            {
+              id: "pq2c",
+              speaker: "her",
+              text: "¿Entonces qué?",
+              time: "22:35",
+            },
+            {
+              id: "pq3c",
+              speaker: "him",
+              text: "Bueno... igual tengo algo planeado para este finde.",
+              time: "22:36",
+            },
+          ],
+        },
       ],
     },
-    postQuizMessages: [
-      {
-        id: "pq1",
-        speaker: "him",
-        text: "...he sido profesor particular? Te podría ayudar.",
-        time: "22:34",
-      },
-      {
-        id: "pq2",
-        speaker: "her",
-        text: "No estaría mal...",
-        time: "22:35",
-      },
-      {
-        id: "pq3",
-        speaker: "him",
-        text: "Bueno... aquí tienes mi disponibilidad.",
-        time: "22:36",
-      },
-    ],
     dayPicker: {
       options: [
         { id: "fri", label: "Vie", day: "13" },

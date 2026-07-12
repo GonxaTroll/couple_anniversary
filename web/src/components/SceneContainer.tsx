@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
 import { HomeScene } from "@couple/video";
 import { MuVimScene } from "@couple/video";
-import type { Scene } from "../scenes/types";
-import { ChatMessages } from "./ChatMessages";
+import type { ChatMessage, Scene } from "../scenes/types";
 import { QuizPanel } from "./QuizPanel";
 import { DayPicker } from "./DayPicker";
 
@@ -15,68 +14,97 @@ const COMPOSITION_MAP = {
 type Props = {
   scene: Scene;
   onNext: () => void;
+  onReset: () => void;
   isLast: boolean;
 };
 
-export function SceneContainer({ scene, onNext, isLast }: Props) {
-  const [messagesComplete, setMessagesComplete] = useState(false);
-  const [quizComplete, setQuizComplete] = useState(false);
-  const [postMessagesComplete, setPostMessagesComplete] = useState(false);
-  const [dayPickerComplete, setDayPickerComplete] = useState(false);
-  const [postDayPickerComplete, setPostDayPickerComplete] = useState(false);
+export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
+  const [displayedMessages, setDisplayedMessages] = useState<ChatMessage[]>([]);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [phase, setPhase] = useState<"messages" | "quiz" | "postMessages" | "dayPicker" | "postDayMessages" | "done" | "wrongEnd">("messages");
+  const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const playerRef = useRef<PlayerRef>(null);
 
-  // Reset on scene change
+  const selectedOption = scene.quiz?.options.find(opt => opt.id === selectedQuizOption);
+  const isCorrectAnswer = selectedOption?.isCorrect === true;
+
+  // Initialize with scene messages
   useEffect(() => {
-    setMessagesComplete(false);
-    setQuizComplete(false);
-    setPostMessagesComplete(false);
-    setDayPickerComplete(false);
-    setPostDayPickerComplete(false);
+    setDisplayedMessages([...scene.messages]);
+    setVisibleCount(0);
+    setPhase(scene.messages.length > 0 ? "messages" : (scene.quiz ? "quiz" : "done"));
+    setSelectedQuizOption(null);
     setTransitioning(false);
     playerRef.current?.seekTo(0);
-  }, [scene.id]);
+  }, [scene.id, scene.messages, scene.quiz]);
 
-  // Auto-complete if no messages
+  // Show messages one by one
   useEffect(() => {
-    if (scene.messages.length === 0) {
-      setMessagesComplete(true);
+    if (phase !== "messages" && phase !== "postMessages" && phase !== "postDayMessages") return;
+    if (visibleCount >= displayedMessages.length) return;
+
+    const t = setTimeout(() => setVisibleCount(v => v + 1), 1800);
+    return () => clearTimeout(t);
+  }, [visibleCount, displayedMessages.length, phase]);
+
+  // When initial messages are done showing
+  useEffect(() => {
+    if (phase === "messages" && visibleCount >= displayedMessages.length && displayedMessages.length > 0) {
+      if (scene.quiz) {
+        setPhase("quiz");
+      } else {
+        setPhase("done");
+      }
     }
-  }, [scene.messages.length]);
+  }, [phase, visibleCount, displayedMessages.length, scene.quiz]);
 
-  // Auto-complete if no post-quiz messages
+  // When post-quiz messages are done showing
   useEffect(() => {
-    if (!scene.postQuizMessages || scene.postQuizMessages.length === 0) {
-      setPostMessagesComplete(true);
+    if (phase === "postMessages" && visibleCount >= displayedMessages.length && displayedMessages.length > 0) {
+      if (isCorrectAnswer && scene.dayPicker) {
+        setPhase("dayPicker");
+      } else if (isCorrectAnswer) {
+        setPhase("done");
+      } else {
+        setPhase("wrongEnd");
+      }
     }
-  }, [scene.postQuizMessages]);
+  }, [phase, visibleCount, displayedMessages.length, scene.dayPicker, isCorrectAnswer]);
 
-  // Auto-complete if no day picker
+  // When post-day-picker messages are done showing
   useEffect(() => {
-    if (!scene.dayPicker) {
-      setDayPickerComplete(true);
+    if (phase === "postDayMessages" && visibleCount >= displayedMessages.length && displayedMessages.length > 0) {
+      setPhase("done");
     }
-  }, [scene.dayPicker]);
+  }, [phase, visibleCount, displayedMessages.length]);
 
-  // Auto-complete if no post-day-picker messages
-  useEffect(() => {
-    if (!scene.postDayPickerMessages || scene.postDayPickerMessages.length === 0) {
-      setPostDayPickerComplete(true);
+  const handleQuizAnswer = useCallback((optionId: string) => {
+    setSelectedQuizOption(optionId);
+    const opt = scene.quiz?.options.find(o => o.id === optionId);
+    const msgs = opt?.nextMessages || [];
+    const correct = opt?.isCorrect === true;
+    if (msgs.length > 0) {
+      setDisplayedMessages(prev => [...prev, ...msgs]);
+      setVisibleCount(prev => prev);
+      setPhase("postMessages");
+    } else if (correct) {
+      setPhase("done");
+    } else {
+      setPhase("wrongEnd");
+    }
+  }, [scene.quiz]);
+
+  const handleDayPickerSelect = useCallback(() => {
+    const msgs = scene.postDayPickerMessages || [];
+    if (msgs.length > 0) {
+      setDisplayedMessages(prev => [...prev, ...msgs]);
+      setVisibleCount(prev => prev);
+      setPhase("postDayMessages");
+    } else {
+      setPhase("done");
     }
   }, [scene.postDayPickerMessages]);
-
-  const handleMessagesComplete = useCallback(() => {
-    setMessagesComplete(true);
-  }, []);
-
-  const handlePostMessagesComplete = useCallback(() => {
-    setPostMessagesComplete(true);
-  }, []);
-
-  const handlePostDayPickerComplete = useCallback(() => {
-    setPostDayPickerComplete(true);
-  }, []);
 
   const handleAdvance = useCallback(async () => {
     if (transitioning) return;
@@ -86,6 +114,8 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
 
   const Component = COMPOSITION_MAP[scene.compositionId];
   const hasMessages = scene.messages.length > 0;
+  const allMessagesShown = visibleCount >= displayedMessages.length;
+  const readyForTransition = phase === "done" && allMessagesShown;
 
   return (
     <div
@@ -95,7 +125,7 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
         transition: "opacity 0.8s ease",
       }}
     >
-      {/* Remotion animation — full-bleed background */}
+      {/* Remotion animation */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div
           style={{
@@ -134,44 +164,70 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
         </div>
       </div>
 
-      {/* Story overlay — only for scenes with messages */}
+      {/* Story overlay */}
       {hasMessages && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center py-12 overflow-y-auto">
-          <ChatMessages
-            messages={scene.messages}
-            onComplete={handleMessagesComplete}
-          />
+          {/* All accumulated messages - always visible */}
+          <div className="flex flex-col gap-4 w-full max-w-2xl mx-auto px-6">
+            {displayedMessages.slice(0, visibleCount).map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.speaker === "her" ? "justify-end" : "justify-start"}`}
+                style={{ animation: "fadeSlideIn 0.4s ease forwards" }}
+              >
+                <div
+                  className={`
+                    relative max-w-[72%] px-5 py-4 shadow-lg
+                    ${msg.speaker === "him"
+                      ? "rounded-2xl rounded-tl-sm border-l-4 border-amber-400/70"
+                      : "rounded-2xl rounded-tr-sm border-r-4 border-rose-400/70"
+                    }
+                  `}
+                  style={{
+                    background: "rgba(252, 249, 248, 0.92)",
+                    backdropFilter: "blur(18px)",
+                    WebkitBackdropFilter: "blur(18px)",
+                    border: "1px solid rgba(255,255,255,0.45)",
+                  }}
+                >
+                  <p
+                    className="text-stone-800 leading-snug mb-1"
+                    style={{ fontFamily: "'EB Garamond', serif", fontSize: "1.15rem" }}
+                  >
+                    "{msg.text}"
+                  </p>
+                  <span
+                    className={`text-xs tracking-widest flex items-center gap-1 ${
+                      msg.speaker === "him" ? "text-amber-700" : "text-rose-700 justify-end"
+                    }`}
+                    style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
+                  >
+                    {msg.time}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
 
-          {messagesComplete && scene.quiz && !quizComplete && (
+          {/* Quiz */}
+          {phase === "quiz" && allMessagesShown && (
             <QuizPanel
-              quiz={scene.quiz}
-              onAnswer={() => setQuizComplete(true)}
+              quiz={scene.quiz!}
+              onAnswer={(id) => handleQuizAnswer(id)}
             />
           )}
 
-          {quizComplete && scene.postQuizMessages && scene.postQuizMessages.length > 0 && (
-            <ChatMessages
-              messages={scene.postQuizMessages}
-              onComplete={handlePostMessagesComplete}
-            />
-          )}
-
-          {postMessagesComplete && scene.dayPicker && !dayPickerComplete && (
+          {/* Day picker */}
+          {phase === "dayPicker" && allMessagesShown && scene.dayPicker && (
             <DayPicker
               options={scene.dayPicker.options}
               correctId={scene.dayPicker.correctId}
-              onSelect={() => setDayPickerComplete(true)}
+              onSelect={handleDayPickerSelect}
             />
           )}
 
-          {dayPickerComplete && scene.postDayPickerMessages && scene.postDayPickerMessages.length > 0 && (
-            <ChatMessages
-              messages={scene.postDayPickerMessages}
-              onComplete={handlePostDayPickerComplete}
-            />
-          )}
-
-          {((!scene.quiz && messagesComplete) || (scene.quiz && quizComplete && postMessagesComplete && dayPickerComplete && postDayPickerComplete)) && scene.transition.type === "button" && (
+          {/* Continue button */}
+          {readyForTransition && scene.transition.type === "button" && (
             <button
               onClick={() => handleAdvance()}
               className="mt-6 px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
@@ -185,7 +241,23 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
             </button>
           )}
 
-          {isLast && ((!scene.quiz && messagesComplete) || (scene.quiz && quizComplete && postMessagesComplete && dayPickerComplete && postDayPickerComplete)) && (
+          {/* Wrong answer - go back to login */}
+          {phase === "wrongEnd" && allMessagesShown && (
+            <button
+              onClick={() => onReset()}
+              className="mt-6 px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
+              style={{
+                fontFamily: "'Be Vietnam Pro', sans-serif",
+                background: "rgba(186, 26, 26, 0.85)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              Volver al inicio
+            </button>
+          )}
+
+          {/* End marker */}
+          {isLast && readyForTransition && (
             <p
               className="mt-8 text-white/60 text-sm tracking-widest"
               style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}
@@ -197,7 +269,7 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
       )}
 
       {/* Simple continue button for scenes without messages */}
-      {!hasMessages && messagesComplete && scene.transition.type === "button" && (
+      {!hasMessages && scene.transition.type === "button" && (
         <div className="absolute inset-0 z-10 flex items-end justify-center pb-16">
           <button
             onClick={() => handleAdvance()}

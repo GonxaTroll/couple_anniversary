@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "../scenes/types";
 
 type Props = {
@@ -8,14 +8,19 @@ type Props = {
 
 export function ChatMessages({ messages, onComplete }: Props) {
   const [visible, setVisible] = useState<number>(0);
+  const doneRef = useRef(false);
 
   useEffect(() => {
     setVisible(0);
+    doneRef.current = false;
   }, [messages]);
 
   useEffect(() => {
     if (visible >= messages.length) {
-      onComplete();
+      if (!doneRef.current) {
+        doneRef.current = true;
+        onComplete();
+      }
       return;
     }
     const t = setTimeout(() => setVisible((v) => v + 1), 1800);

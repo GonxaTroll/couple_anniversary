@@ -18,6 +18,15 @@ export default function App() {
     }, 800);
   }, [sceneIndex]);
 
+  const handleReset = useCallback(() => {
+    setFadingOut(true);
+    setTimeout(() => {
+      setSceneIndex(0);
+      setStoryUnlocked(false);
+      setFadingOut(false);
+    }, 800);
+  }, []);
+
   if (!storyUnlocked) {
     return (
       <div className="w-screen h-screen overflow-hidden">
@@ -42,6 +51,7 @@ export default function App() {
         key={SCENES[sceneIndex].id}
         scene={SCENES[sceneIndex]}
         onNext={handleNext}
+        onReset={handleReset}
         isLast={sceneIndex === SCENES.length - 1}
       />
     </div>

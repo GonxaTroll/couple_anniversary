@@ -8,6 +8,8 @@ export type ChatMessage = {
 export type QuizOption = {
   id: string;
   text: string;
+  nextMessages?: ChatMessage[];
+  isCorrect?: boolean;
 };
 
 export type Quiz = {
