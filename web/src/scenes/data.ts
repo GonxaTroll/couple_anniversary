@@ -1,7 +1,7 @@
 import type { Scene, Riddle } from "./types";
 
 export const RIDDLE: Riddle = {
-  question: "What was the name of the place where we first held hands?",
+  question: "¿Cuál era el nombre del lugar donde nos tomamos de la mano por primera vez?",
   answer: "malvarrosa",
 };
 
@@ -13,35 +13,35 @@ export const SCENES: Scene[] = [
       {
         id: "h1",
         speaker: "him",
-        text: "Are you still studying? You've been at it for hours.",
-        time: "10:30 PM",
+        text: "¿Todavía estás estudiando? Llevas horas con eso.",
+        time: "22:30",
       },
       {
         id: "h2",
         speaker: "her",
-        text: "Yeah, trying to finish this physics chapter. Prime numbers are melting my brain.",
-        time: "10:32 PM",
+        text: "Sí, intentando terminar este capítulo de física. Los números primos me están derritiendo el cerebro.",
+        time: "22:32",
       },
       {
         id: "h3",
         speaker: "him",
-        text: "Take a break soon! I'm just relaxing, reading that book you recommended.",
-        time: "10:33 PM",
+        text: "¡Descansa pronto! Estoy relajándome, leyendo ese libro que me recomendaste.",
+        time: "22:33",
       },
       {
         id: "h4",
         speaker: "her",
-        text: "Almost done. I'll call you when I finish! Miss you.",
-        time: "10:35 PM",
+        text: "Casi termino. ¡Te llamo cuando acabe! Te echo de menos.",
+        time: "22:35",
       },
     ],
     quiz: {
       questionKey: "first_late_night",
-      question: "Do you remember what book he was reading that night?",
+      question: "¿Recuerdas qué libro estaba leyendo esa noche?",
       options: [
-        { id: "a", text: "The one she recommended" },
-        { id: "b", text: "A data science textbook" },
-        { id: "c", text: "He wasn't reading, just scrolling" },
+        { id: "a", text: "El que ella recomendó" },
+        { id: "b", text: "Un libro de ciencia de datos" },
+        { id: "c", text: "No estaba leyendo, solo desplazándose" },
       ],
     },
     transition: { type: "quiz" },
@@ -50,6 +50,6 @@ export const SCENES: Scene[] = [
     id: "muvim",
     compositionId: "MuVimScene",
     messages: [],
-    transition: { type: "button", label: "Continue" },
+    transition: { type: "button", label: "Continuar" },
   },
 ];

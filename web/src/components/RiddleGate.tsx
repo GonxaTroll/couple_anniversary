@@ -131,7 +131,7 @@ export function RiddleGate({ question, answer, onSolved }: Props) {
               letterSpacing: "0.03em",
             }}
           >
-            Unlock your memories to continue.
+            Desbloquea tus recuerdos para continuar.
           </p>
 
           {/* Form */}
@@ -146,7 +146,7 @@ export function RiddleGate({ question, answer, onSolved }: Props) {
                 setValue(e.target.value);
                 setError(false);
               }}
-              placeholder="Enter the answer..."
+              placeholder="Ingresa la respuesta..."
               autoComplete="off"
               className="w-full text-center py-3 px-2 outline-none"
               style={{
@@ -172,7 +172,7 @@ export function RiddleGate({ question, answer, onSolved }: Props) {
                   animation: "fadeSlideIn 0.3s ease",
                 }}
               >
-                That's not quite right...
+                Eso no es del todo correcto...
               </p>
             )}
 
@@ -203,7 +203,7 @@ export function RiddleGate({ question, answer, onSolved }: Props) {
               >
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
               </svg>
-              Unlock Journal
+              Desbloquear Diario
             </button>
           </form>
         </div>
