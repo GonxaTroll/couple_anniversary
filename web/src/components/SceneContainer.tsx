@@ -5,6 +5,7 @@ import { MuVimScene } from "@couple/video";
 import type { Scene } from "../scenes/types";
 import { ChatMessages } from "./ChatMessages";
 import { QuizPanel } from "./QuizPanel";
+import { DayPicker } from "./DayPicker";
 
 const COMPOSITION_MAP = {
   HomeScene,
@@ -19,12 +20,20 @@ type Props = {
 
 export function SceneContainer({ scene, onNext, isLast }: Props) {
   const [messagesComplete, setMessagesComplete] = useState(false);
+  const [quizComplete, setQuizComplete] = useState(false);
+  const [postMessagesComplete, setPostMessagesComplete] = useState(false);
+  const [dayPickerComplete, setDayPickerComplete] = useState(false);
+  const [postDayPickerComplete, setPostDayPickerComplete] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const playerRef = useRef<PlayerRef>(null);
 
   // Reset on scene change
   useEffect(() => {
     setMessagesComplete(false);
+    setQuizComplete(false);
+    setPostMessagesComplete(false);
+    setDayPickerComplete(false);
+    setPostDayPickerComplete(false);
     setTransitioning(false);
     playerRef.current?.seekTo(0);
   }, [scene.id]);
@@ -36,8 +45,37 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
     }
   }, [scene.messages.length]);
 
+  // Auto-complete if no post-quiz messages
+  useEffect(() => {
+    if (!scene.postQuizMessages || scene.postQuizMessages.length === 0) {
+      setPostMessagesComplete(true);
+    }
+  }, [scene.postQuizMessages]);
+
+  // Auto-complete if no day picker
+  useEffect(() => {
+    if (!scene.dayPicker) {
+      setDayPickerComplete(true);
+    }
+  }, [scene.dayPicker]);
+
+  // Auto-complete if no post-day-picker messages
+  useEffect(() => {
+    if (!scene.postDayPickerMessages || scene.postDayPickerMessages.length === 0) {
+      setPostDayPickerComplete(true);
+    }
+  }, [scene.postDayPickerMessages]);
+
   const handleMessagesComplete = useCallback(() => {
     setMessagesComplete(true);
+  }, []);
+
+  const handlePostMessagesComplete = useCallback(() => {
+    setPostMessagesComplete(true);
+  }, []);
+
+  const handlePostDayPickerComplete = useCallback(() => {
+    setPostDayPickerComplete(true);
   }, []);
 
   const handleAdvance = useCallback(async () => {
@@ -104,14 +142,36 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
             onComplete={handleMessagesComplete}
           />
 
-          {messagesComplete && scene.quiz && (
+          {messagesComplete && scene.quiz && !quizComplete && (
             <QuizPanel
               quiz={scene.quiz}
-              onAnswer={() => handleAdvance()}
+              onAnswer={() => setQuizComplete(true)}
             />
           )}
 
-          {messagesComplete && !scene.quiz && scene.transition.type === "button" && (
+          {quizComplete && scene.postQuizMessages && scene.postQuizMessages.length > 0 && (
+            <ChatMessages
+              messages={scene.postQuizMessages}
+              onComplete={handlePostMessagesComplete}
+            />
+          )}
+
+          {postMessagesComplete && scene.dayPicker && !dayPickerComplete && (
+            <DayPicker
+              options={scene.dayPicker.options}
+              correctId={scene.dayPicker.correctId}
+              onSelect={() => setDayPickerComplete(true)}
+            />
+          )}
+
+          {dayPickerComplete && scene.postDayPickerMessages && scene.postDayPickerMessages.length > 0 && (
+            <ChatMessages
+              messages={scene.postDayPickerMessages}
+              onComplete={handlePostDayPickerComplete}
+            />
+          )}
+
+          {((!scene.quiz && messagesComplete) || (scene.quiz && quizComplete && postMessagesComplete && dayPickerComplete && postDayPickerComplete)) && scene.transition.type === "button" && (
             <button
               onClick={() => handleAdvance()}
               className="mt-6 px-8 py-3 rounded-full text-white text-sm tracking-widest transition-all hover:scale-105 active:scale-95"
@@ -125,7 +185,7 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
             </button>
           )}
 
-          {isLast && messagesComplete && !scene.quiz && (
+          {isLast && ((!scene.quiz && messagesComplete) || (scene.quiz && quizComplete && postMessagesComplete && dayPickerComplete && postDayPickerComplete)) && (
             <p
               className="mt-8 text-white/60 text-sm tracking-widest"
               style={{ fontFamily: "'Be Vietnam Pro', sans-serif" }}

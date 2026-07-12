@@ -1,8 +1,8 @@
 import type { Scene, Riddle } from "./types";
 
 export const RIDDLE: Riddle = {
-  question: "¿Cuál era el nombre del lugar donde nos tomamos de la mano por primera vez?",
-  answer: "malvarrosa",
+  question: "¿Qué día nos conocimos? (día/mes/año)",
+  answer: "",
 };
 
 export const SCENES: Scene[] = [
@@ -25,31 +25,86 @@ export const SCENES: Scene[] = [
       {
         id: "h3",
         speaker: "him",
-        text: "¡Descansa pronto! Estoy relajándome, leyendo ese libro que me recomendaste.",
+        text: "Damn. ¿Sabías que yo...",
         time: "22:33",
-      },
-      {
-        id: "h4",
-        speaker: "her",
-        text: "Casi termino. ¡Te llamo cuando acabe! Te echo de menos.",
-        time: "22:35",
       },
     ],
     quiz: {
       questionKey: "first_late_night",
-      question: "¿Recuerdas qué libro estaba leyendo esa noche?",
+      question: "¿A qué se ha dedicado Gonzalo anteriormente?",
       options: [
-        { id: "a", text: "El que ella recomendó" },
-        { id: "b", text: "Un libro de ciencia de datos" },
-        { id: "c", text: "No estaba leyendo, solo desplazándose" },
+        { id: "a", text: "Profesor de física." },
+        { id: "b", text: "A estar en su Prime (como los números)" },
+        { id: "c", text: "Chocolatero" },
       ],
     },
-    transition: { type: "quiz" },
+    postQuizMessages: [
+      {
+        id: "pq1",
+        speaker: "him",
+        text: "...he sido profesor particular? Te podría ayudar.",
+        time: "22:34",
+      },
+      {
+        id: "pq2",
+        speaker: "her",
+        text: "No estaría mal...",
+        time: "22:35",
+      },
+      {
+        id: "pq3",
+        speaker: "him",
+        text: "Bueno... aquí tienes mi disponibilidad.",
+        time: "22:36",
+      },
+    ],
+    dayPicker: {
+      options: [
+        { id: "fri", label: "Vie", day: "13" },
+        { id: "sat", label: "Sáb", day: "14" },
+        { id: "sun", label: "Dom", day: "15" },
+      ],
+      correctId: "sat",
+    },
+    postDayPickerMessages: [
+      {
+        id: "pd1",
+        speaker: "her",
+        text: "Pues supongo que ahora puedes pasarte.",
+        time: "22:37",
+      },
+      {
+        id: "pd2",
+        speaker: "him",
+        text: "Ahora te veo",
+        time: "22:38",
+      }
+    ],
+    transition: { type: "button", label: "Continuar" },
   },
   {
     id: "muvim",
     compositionId: "MuVimScene",
-    messages: [],
+    messages: [
+      {
+        id: "m1",
+        speaker: "him",
+        text: "Estoy fuera del MuViM. Es aún más bonito de noche.",
+        time: "21:15",
+      },
+      {
+        id: "m2",
+        speaker: "her",
+        text: "¡Has llegado pronto! Estoy a dos calles, acabo de salir del metro.",
+        time: "21:16",
+      },
+      {
+        id: "m3",
+        speaker: "him",
+        text: "Tómate tu tiempo. Podría esperarte aquí para siempre.",
+        time: "21:17",
+      },
+    ],
     transition: { type: "button", label: "Continuar" },
   },
 ];

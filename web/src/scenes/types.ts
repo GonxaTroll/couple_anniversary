@@ -28,11 +28,25 @@ export type Riddle = {
   buttonLabel?: string;
 };
 
+export type DayOption = {
+  id: string;
+  label: string;
+  day: string;
+};
+
+export type DayPicker = {
+  options: DayOption[];
+  correctId: string;
+};
+
 export type Scene = {
   id: string;
   compositionId: "HomeScene" | "MuVimScene";
   messages: ChatMessage[];
+  postQuizMessages?: ChatMessage[];
   quiz?: Quiz;
   riddle?: Riddle;
+  dayPicker?: DayPicker;
+  postDayPickerMessages?: ChatMessage[];
   transition: TransitionTrigger;
 };
