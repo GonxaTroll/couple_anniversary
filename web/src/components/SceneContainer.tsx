@@ -5,11 +5,6 @@ import { MuVimScene } from "@couple/video";
 import type { Scene } from "../scenes/types";
 import { ChatMessages } from "./ChatMessages";
 import { QuizPanel } from "./QuizPanel";
-import { submitQuizAnswer } from "../api/quiz";
-
-// Hardcoded for now — swap once backend auth/session exists
-const ANNIVERSARY_ID = 1;
-const PERSON = "person_1"; // TODO: determine from session
 
 const COMPOSITION_MAP = {
   HomeScene,
@@ -45,21 +40,11 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
     setMessagesComplete(true);
   }, []);
 
-  const handleAdvance = useCallback(async (answerId?: string, answerText?: string) => {
+  const handleAdvance = useCallback(async () => {
     if (transitioning) return;
     setTransitioning(true);
-
-    if (scene.quiz && answerId && answerText) {
-      submitQuizAnswer({
-        anniversary_id: ANNIVERSARY_ID,
-        person: PERSON,
-        question_key: scene.quiz.questionKey,
-        answer_text: answerText,
-      }).catch(console.error);
-    }
-
     setTimeout(() => onNext(), 400);
-  }, [transitioning, scene.quiz, onNext]);
+  }, [transitioning, onNext]);
 
   const Component = COMPOSITION_MAP[scene.compositionId];
   const hasMessages = scene.messages.length > 0;
@@ -101,7 +86,9 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
             spaceKeyToPlayOrPause={false}
             moveToBeginningWhenEnded={false}
             inputProps={{
-              imageSrc: `${window.location.origin}/${
+              imageSrc: `${
+                import.meta.env.BASE_URL
+              }${
                 scene.compositionId === "HomeScene" ? "final_home.png" : "final_muvim.png"
               }`,
             }}
@@ -120,7 +107,7 @@ export function SceneContainer({ scene, onNext, isLast }: Props) {
           {messagesComplete && scene.quiz && (
             <QuizPanel
               quiz={scene.quiz}
-              onAnswer={(id, text) => handleAdvance(id, text)}
+              onAnswer={() => handleAdvance()}
             />
           )}
 

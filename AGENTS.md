@@ -3,7 +3,7 @@
 ## Project
 
 Personal couple anniversary webapp. React frontend with Remotion video animations,
-FastAPI backend for data persistence and LLM-based answer matching.
+deployed as a static site to GitHub Pages.
 
 ## Repo structure
 
@@ -11,9 +11,8 @@ FastAPI backend for data persistence and LLM-based answer matching.
 couple_anniversary/          ← repo root
 ├── web/                     ← React 19 + Vite 8 + TypeScript frontend (@couple/web)
 ├── video/                   ← Remotion 4 compositions (@couple/video)
-├── api/                     ← Python FastAPI backend
 ├── images/                  ← AI-generated character PNGs (final_home.png, final_muvim.png)
-└── package.json             ← npm workspaces root (web + video only; api is Python)
+└── package.json             ← npm workspaces root (web + video)
 ```
 
 ## Dev commands
@@ -41,16 +40,14 @@ npm run build            # remotion bundle
 npm run lint             # eslint src && tsc
 ```
 
-### Backend (api/)
-```bash
-cd api
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env     # fill in LLM key when chosen
-python run.py            # uvicorn on :8000, auto-reload
-```
+## GitHub Pages Deployment
 
-API docs auto-generated at http://localhost:8000/docs (Swagger) and /redoc.
+The app is deployed to GitHub Pages as a static site. Push to `main` to trigger
+automatic deployment via `.github/workflows/deploy.yml`.
+
+**Live URL:** `https://<username>.github.io/couple_anniversary/`
+
+The Vite config uses `base: '/couple_anniversary/'` for correct asset paths.
 
 ## Key architecture notes
 
@@ -58,12 +55,7 @@ API docs auto-generated at http://localhost:8000/docs (Swagger) and /redoc.
   no server-side rendering needed unless you want downloadable MP4s later.
 - `video/` is a workspace package (`@couple/video`) imported directly by `web/` —
   compositions are shared as source, not built artifacts.
-- Backend uses **SQLite + aiosqlite** (zero config). Swap `DATABASE_URL` in `.env`
-  for Postgres when needed.
-- LLM provider is **not yet chosen**. Stub lives at `api/app/services/llm.py` —
-  implement `match_answers()` there once provider is decided.
-  Add the API key to `.env` (slots exist for OpenAI, Google, Anthropic).
-- CORS is configured for `http://localhost:5173` in dev via `api/.env`.
+- The app is a **static site** with no backend — all data is hardcoded in the frontend.
 
 ## npm workspaces
 
