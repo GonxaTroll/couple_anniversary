@@ -20,7 +20,7 @@ export type Quiz = {
 
 export type TransitionTrigger =
   | { type: "quiz" }          // next scene unlocked after quiz answer
-  | { type: "button"; label: string }  // explicit CTA
+  | { type: "button"; label: string; delayMs?: number }  // explicit CTA with optional delay
   | { type: "auto"; delayMs: number }; // auto-advance after delay
 
 export type Riddle = {
@@ -48,7 +48,7 @@ export type NarratorPopup = {
 
 export type Scene = {
   id: string;
-  compositionId: "HomeScene" | "MuVimScene" | "HomeBothScene";
+  compositionId: "HomeScene" | "MuVimScene" | "HomeBothScene" | "TripsScene";
   narrator?: NarratorPopup;
   messages: ChatMessage[];
   postQuizMessages?: ChatMessage[];

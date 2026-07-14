@@ -237,4 +237,10 @@ export const SCENES: Scene[] = [
     },
     transition: { type: "button", label: "Continuar" },
   },
+  {
+    id: "trips",
+    compositionId: "TripsScene",
+    messages: [],
+    transition: { type: "button", label: "Fin", delayMs: 20000 },
+  },
 ];

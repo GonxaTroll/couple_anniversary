@@ -3,6 +3,7 @@ import { Player, type PlayerRef } from "@remotion/player";
 import { HomeScene } from "@couple/video";
 import { MuVimScene } from "@couple/video";
 import { HomeBothScene } from "@couple/video";
+import { TripsScene } from "@couple/video";
 import type { ChatMessage, Scene } from "../scenes/types";
 import { QuizPanel } from "./QuizPanel";
 import { DayPicker } from "./DayPicker";
@@ -11,6 +12,7 @@ const COMPOSITION_MAP = {
   HomeScene,
   MuVimScene,
   HomeBothScene,
+  TripsScene,
 } as const;
 
 type Props = {
@@ -26,6 +28,7 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
   const [phase, setPhase] = useState<"narrator" | "messages" | "quiz" | "postMessages" | "dayPicker" | "postDayMessages" | "done" | "wrongEnd">("narrator");
   const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [delayElapsed, setDelayElapsed] = useState(false);
   const playerRef = useRef<PlayerRef>(null);
 
   const selectedOption = scene.quiz?.options.find(opt => opt.id === selectedQuizOption);
@@ -133,6 +136,17 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
   const allMessagesShown = visibleCount >= displayedMessages.length;
   const readyForTransition = phase === "done" && allMessagesShown;
 
+  // Button delay for scenes without messages
+  useEffect(() => {
+    if (!hasMessages && scene.transition.type === "button" && scene.transition.delayMs) {
+      setDelayElapsed(false);
+      const t = setTimeout(() => setDelayElapsed(true), scene.transition.delayMs);
+      return () => clearTimeout(t);
+    } else {
+      setDelayElapsed(true);
+    }
+  }, [scene.id, hasMessages, scene.transition]);
+
   return (
     <div
       className="relative w-full h-screen overflow-hidden"
@@ -169,15 +183,23 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
             clickToPlay={false}
             spaceKeyToPlayOrPause={false}
             moveToBeginningWhenEnded={false}
-            inputProps={{
-              imageSrc: `${
-                import.meta.env.BASE_URL
-              }${
-                scene.compositionId === "HomeScene" ? "final_home.png"
-                  : scene.compositionId === "HomeBothScene" ? "final_home_both.png"
-                  : "final_muvim.png"
-              }`,
-            }}
+            inputProps={
+              scene.compositionId === "TripsScene"
+                ? { images: [
+                    `${import.meta.env.BASE_URL}final_albufera.png`,
+                    `${import.meta.env.BASE_URL}final_budapest.png`,
+                    `${import.meta.env.BASE_URL}final_horchata.png`,
+                  ] }
+                : {
+                    imageSrc: `${
+                      import.meta.env.BASE_URL
+                    }${
+                      scene.compositionId === "HomeScene" ? "final_home.png"
+                        : scene.compositionId === "HomeBothScene" ? "final_home_both.png"
+                        : "final_muvim.png"
+                    }`,
+                  }
+            }
           />
         </div>
       </div>
@@ -309,7 +331,7 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
       )}
 
       {/* Simple continue button for scenes without messages */}
-      {!hasMessages && scene.transition.type === "button" && (
+      {!hasMessages && scene.transition.type === "button" && delayElapsed && (
         <div className="absolute inset-0 z-10 flex items-end justify-center pb-16">
           <button
             onClick={() => handleAdvance()}
