@@ -50,6 +50,7 @@ export type Scene = {
   id: string;
   compositionId: "HomeScene" | "MuVimScene" | "HomeBothScene" | "TripsScene";
   narrator?: NarratorPopup;
+  loopAnimation?: boolean;
   messages: ChatMessage[];
   postQuizMessages?: ChatMessage[];
   quiz?: Quiz;
