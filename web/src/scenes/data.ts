@@ -135,6 +135,7 @@ export const SCENES: Scene[] = [
   {
     id: "muvim",
     compositionId: "MuVimScene",
+    loopAnimation: false,
     messages: [
       {
         id: "m1",
@@ -160,6 +161,7 @@ export const SCENES: Scene[] = [
   {
     id: "home_both",
     compositionId: "HomeBothScene",
+    loopAnimation: false,
     narrator: {
       text: "Comienzan a hablar durante horas...",
       durationMs: 3500,
@@ -240,6 +242,7 @@ export const SCENES: Scene[] = [
   {
     id: "trips",
     compositionId: "TripsScene",
+    loopAnimation: false,
     messages: [],
     transition: { type: "button", label: "Fin", delayMs: 20000 },
   },

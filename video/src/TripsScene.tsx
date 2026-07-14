@@ -16,14 +16,20 @@ const IMAGES = [
   "/final_horchata.png",
 ];
 
+const TEXTS = [
+  "Y como esta, muchas han sido las experiencias juntos",
+  "1 año compartido. Diferentes estaciones, diferentes emociones",
+  "Por muchas más. Te quiero",
+];
+
 export const TripsScene: React.FC<Props> = ({ images = IMAGES }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
 
   const sceneOpacity = interpolate(
     frame,
-    [0, 20, durationInFrames - 30, durationInFrames],
-    [0, 1, 1, 0],
+    [0, 20],
+    [0, 1],
     { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
   );
 
@@ -55,11 +61,11 @@ export const TripsScene: React.FC<Props> = ({ images = IMAGES }) => {
 
         let opacity: number;
         if (i === images.length - 1) {
-          // Last image: fade in, stay visible, fade out at very end
+          // Last image: fade in and stay visible
           opacity = interpolate(
             frame,
-            [start, start + 20, durationInFrames - 30, durationInFrames],
-            [0, 1, 1, 0],
+            [start, start + 20],
+            [0, 1],
             { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
           );
         } else {
@@ -94,6 +100,39 @@ export const TripsScene: React.FC<Props> = ({ images = IMAGES }) => {
                 objectPosition: `calc(50% + ${drift}px) 50%`,
               }}
             />
+            {/* Text overlay */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "flex-end",
+                justifyContent: "center",
+                paddingBottom: 80,
+                background: "linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 50%)",
+              }}
+            >
+              <p
+                style={{
+                  fontFamily: "'EB Garamond', serif",
+                  fontSize: 38,
+                  fontStyle: "italic",
+                  color: "#fff",
+                  textAlign: "center",
+                  maxWidth: "75%",
+                  lineHeight: 1.4,
+                  textShadow: "0 2px 12px rgba(0,0,0,0.6)",
+                  opacity: interpolate(
+                    frame,
+                    [start + 30, start + 50],
+                    [0, 1],
+                    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+                  ),
+                }}
+              >
+                {TEXTS[i]}
+              </p>
+            </div>
           </div>
         );
       })}

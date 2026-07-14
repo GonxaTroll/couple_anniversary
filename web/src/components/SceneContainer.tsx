@@ -178,7 +178,7 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
             compositionHeight={672}
             style={{ width: "100%", height: "100%" }}
             autoPlay
-            loop
+            loop={scene.loopAnimation !== false}
             controls={false}
             clickToPlay={false}
             spaceKeyToPlayOrPause={false}
