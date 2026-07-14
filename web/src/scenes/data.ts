@@ -160,32 +160,81 @@ export const SCENES: Scene[] = [
   {
     id: "home_both",
     compositionId: "HomeBothScene",
+    narrator: {
+      text: "Comienzan a hablar durante horas...",
+      durationMs: 3500,
+    },
     messages: [
       {
         id: "hb1",
         speaker: "him",
-        text: "Por fin estamos juntos.",
+        text: "Bueno, ¿por qué tema empezamos?",
         time: "23:00",
       },
-      {
-        id: "hb2",
-        speaker: "her",
-        text: "Sí, ha merecido la pena esperar.",
-        time: "23:01",
-      },
-      {
-        id: "hb3",
-        speaker: "him",
-        text: "¿Qué hacemos ahora?",
-        time: "23:02",
-      },
-      {
-        id: "hb4",
-        speaker: "her",
-        text: "Nada. Solo estar aquí contigo.",
-        time: "23:03",
-      },
     ],
+    quiz: {
+      questionKey: "study_topic",
+      question: "¿Qué tema estudiamos?",
+      options: [
+        {
+          id: "optics",
+          text: "Óptica",
+          isCorrect: true,
+          nextMessages: [
+            {
+              id: "hb_opt1",
+              speaker: "her",
+              text: "Óptica.",
+              time: "23:01",
+            },
+            {
+              id: "hb_opt2",
+              speaker: "her",
+              text: "Tocará estudiar algo de física.",
+              time: "23:02",
+            },
+          ],
+        },
+        {
+          id: "emag",
+          text: "Electromagnetismo",
+          isCorrect: true,
+          nextMessages: [
+            {
+              id: "hb_em1",
+              speaker: "her",
+              text: "Electromagnetismo.",
+              time: "23:01",
+            },
+            {
+              id: "hb_em2",
+              speaker: "her",
+              text: "Tocará estudiar algo de física.",
+              time: "23:02",
+            },
+          ],
+        },
+        {
+          id: "amazon",
+          text: "Amazon Prime",
+          isCorrect: true,
+          nextMessages: [
+            {
+              id: "hb_am1",
+              speaker: "her",
+              text: "Vamos a ver una peli.",
+              time: "23:01",
+            },
+            {
+              id: "hb_am2",
+              speaker: "her",
+              text: "Ya estudiaré mañana.",
+              time: "23:02",
+            },
+          ],
+        },
+      ],
+    },
     transition: { type: "button", label: "Continuar" },
   },
 ];

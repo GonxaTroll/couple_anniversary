@@ -41,9 +41,15 @@ export type DayPicker = {
   correctId: string;
 };
 
+export type NarratorPopup = {
+  text: string;
+  durationMs?: number;
+};
+
 export type Scene = {
   id: string;
   compositionId: "HomeScene" | "MuVimScene" | "HomeBothScene";
+  narrator?: NarratorPopup;
   messages: ChatMessage[];
   postQuizMessages?: ChatMessage[];
   quiz?: Quiz;

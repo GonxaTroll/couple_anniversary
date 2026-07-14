@@ -23,7 +23,7 @@ type Props = {
 export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
   const [displayedMessages, setDisplayedMessages] = useState<ChatMessage[]>([]);
   const [visibleCount, setVisibleCount] = useState(0);
-  const [phase, setPhase] = useState<"messages" | "quiz" | "postMessages" | "dayPicker" | "postDayMessages" | "done" | "wrongEnd">("messages");
+  const [phase, setPhase] = useState<"narrator" | "messages" | "quiz" | "postMessages" | "dayPicker" | "postDayMessages" | "done" | "wrongEnd">("narrator");
   const [selectedQuizOption, setSelectedQuizOption] = useState<string | null>(null);
   const [transitioning, setTransitioning] = useState(false);
   const playerRef = useRef<PlayerRef>(null);
@@ -35,11 +35,25 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
   useEffect(() => {
     setDisplayedMessages([...scene.messages]);
     setVisibleCount(0);
-    setPhase(scene.messages.length > 0 ? "messages" : (scene.quiz ? "quiz" : "done"));
     setSelectedQuizOption(null);
     setTransitioning(false);
     playerRef.current?.seekTo(0);
-  }, [scene.id, scene.messages, scene.quiz]);
+    if (scene.narrator) {
+      setPhase("narrator");
+    } else {
+      setPhase(scene.messages.length > 0 ? "messages" : (scene.quiz ? "quiz" : "done"));
+    }
+  }, [scene.id, scene.messages, scene.quiz, scene.narrator]);
+
+  // Narrator phase: auto-advance after duration
+  useEffect(() => {
+    if (phase !== "narrator") return;
+    const duration = scene.narrator?.durationMs ?? 3000;
+    const t = setTimeout(() => {
+      setPhase(scene.messages.length > 0 ? "messages" : (scene.quiz ? "quiz" : "done"));
+    }, duration);
+    return () => clearTimeout(t);
+  }, [phase, scene.narrator, scene.messages, scene.quiz]);
 
   // Show messages one by one
   useEffect(() => {
@@ -167,6 +181,28 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
           />
         </div>
       </div>
+
+      {/* Narrator popup */}
+      {phase === "narrator" && scene.narrator && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div
+            className="px-10 py-6 rounded-2xl max-w-lg text-center"
+            style={{
+              background: "rgba(30, 20, 15, 0.78)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              animation: "fadeSlideIn 0.6s ease forwards",
+            }}
+          >
+            <p
+              className="text-stone-200 italic leading-relaxed text-lg"
+              style={{ fontFamily: "'EB Garamond', serif" }}
+            >
+              {scene.narrator.text}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Story overlay */}
       {hasMessages && (
