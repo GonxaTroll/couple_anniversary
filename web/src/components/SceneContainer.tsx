@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
 import { HomeScene } from "@couple/video";
 import { MuVimScene } from "@couple/video";
+import { HomeBothScene } from "@couple/video";
 import type { ChatMessage, Scene } from "../scenes/types";
 import { QuizPanel } from "./QuizPanel";
 import { DayPicker } from "./DayPicker";
@@ -9,6 +10,7 @@ import { DayPicker } from "./DayPicker";
 const COMPOSITION_MAP = {
   HomeScene,
   MuVimScene,
+  HomeBothScene,
 } as const;
 
 type Props = {
@@ -157,7 +159,9 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
               imageSrc: `${
                 import.meta.env.BASE_URL
               }${
-                scene.compositionId === "HomeScene" ? "final_home.png" : "final_muvim.png"
+                scene.compositionId === "HomeScene" ? "final_home.png"
+                  : scene.compositionId === "HomeBothScene" ? "final_home_both.png"
+                  : "final_muvim.png"
               }`,
             }}
           />

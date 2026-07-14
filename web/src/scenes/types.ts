@@ -43,7 +43,7 @@ export type DayPicker = {
 
 export type Scene = {
   id: string;
-  compositionId: "HomeScene" | "MuVimScene";
+  compositionId: "HomeScene" | "MuVimScene" | "HomeBothScene";
   messages: ChatMessage[];
   postQuizMessages?: ChatMessage[];
   quiz?: Quiz;

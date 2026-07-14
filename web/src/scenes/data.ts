@@ -157,4 +157,35 @@ export const SCENES: Scene[] = [
     ],
     transition: { type: "button", label: "Continuar" },
   },
+  {
+    id: "home_both",
+    compositionId: "HomeBothScene",
+    messages: [
+      {
+        id: "hb1",
+        speaker: "him",
+        text: "Por fin estamos juntos.",
+        time: "23:00",
+      },
+      {
+        id: "hb2",
+        speaker: "her",
+        text: "Sí, ha merecido la pena esperar.",
+        time: "23:01",
+      },
+      {
+        id: "hb3",
+        speaker: "him",
+        text: "¿Qué hacemos ahora?",
+        time: "23:02",
+      },
+      {
+        id: "hb4",
+        speaker: "her",
+        text: "Nada. Solo estar aquí contigo.",
+        time: "23:03",
+      },
+    ],
+    transition: { type: "button", label: "Continuar" },
+  },
 ];
