@@ -29,7 +29,7 @@ export default function App() {
 
   if (!storyUnlocked) {
     return (
-      <div className="w-screen h-screen overflow-hidden">
+      <div className="w-screen full-height overflow-hidden">
         <RiddleGate
           question={RIDDLE.question}
           answer={RIDDLE.answer}
@@ -41,7 +41,7 @@ export default function App() {
 
   return (
     <div
-      className="w-screen h-screen overflow-hidden bg-black"
+      className="w-screen full-height overflow-hidden bg-black"
       style={{
         opacity: fadingOut ? 0 : 1,
         transition: "opacity 0.8s ease",

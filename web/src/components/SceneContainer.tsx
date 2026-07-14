@@ -149,7 +149,7 @@ export function SceneContainer({ scene, onNext, onReset, isLast }: Props) {
 
   return (
     <div
-      className="relative w-full h-screen overflow-hidden"
+      className="relative w-full full-height overflow-hidden"
       style={{
         opacity: transitioning ? 0 : 1,
         transition: "opacity 0.8s ease",
