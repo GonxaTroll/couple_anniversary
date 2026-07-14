@@ -2,7 +2,7 @@ import type { Scene, Riddle } from "./types";
 
 export const RIDDLE: Riddle = {
   question: "¿Qué día nos conocimos? (día/mes/año)",
-  answer: "",
+  answer: "14/06/2025",
 };
 
 export const SCENES: Scene[] = [
